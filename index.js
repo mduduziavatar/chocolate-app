@@ -61,6 +61,85 @@ app.post("/add", async function(req, res) {
 
 });
 
+app.post("/api/buy", async function(req, res) {
+
+    let chocName = req.body.name;
+    let qty = req.body.qty;
+
+    if (chocName && qty !== "") {
+
+        try {
+            console.log("adding")
+
+            const doesChocolateExist = await chocolate.doesExist(chocName);
+            if (!doesChocolateExist) {
+                await chocolate.insert(chocName, qty)
+                console.log("added");
+                return res.json({
+                    status: "success",
+                    message: "Added " + chocName
+                });
+            } else {
+                await chocolate.incrementQtyByName(chocName);
+                console.log("updated");
+                return res.json({
+                    status: "success",
+                    message: "Bought " + chocName
+                });
+            }
+
+        } catch (err) {
+            console.log(err);
+            return res.json({
+                status: "error",
+                message: err
+            });
+        }
+    }
+
+    return res.json({
+        status: "error",
+        message: "no chocolate name or qty"
+    });
+
+});
+
+app.post("/api/eat", async function(req, res) {
+
+    let chocName = req.body.name;
+    let qty = req.body.qty;
+
+    if (chocName && qty !== "") {
+
+        try {
+            console.log("adding")
+
+            const doesChocolateExist = await chocolate.doesExist(chocName);
+            if (doesChocolateExist) {
+                await chocolate.decrementQtyByName(chocName)
+                console.log("eaten");
+                return res.json({
+                    status: "success",
+                    message: "Eaten " + chocName
+                });
+            }
+
+        } catch (err) {
+            console.log(err);
+            return res.json({
+                status: "error",
+                message: err
+            });
+        }
+    }
+
+    return res.json({
+        status: "error",
+        message: "no chocolate name or qty"
+    });
+
+});
+
 app.post("/chocolate_stock", async function(req, res) {
     let {
         id

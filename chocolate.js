@@ -28,13 +28,19 @@ module.exports = function(pool) {
         pool.query("update chocolate set qty = qty - 1 where name = $1 and (qty - 1) >= 0", [name]);
     }
 
+    async function doesExist(name) {
+        const result = await pool.query("select count(*) from chocolate where name = $1 ", [name]);
+        return result.rows[0].count > 0;
+    }
+
     return {
         list,
         incrementQtyById,
         incrementQtyByName,
         decrementQtyById,
         decrementQtyByName,
-        insert
+        insert,
+        doesExist
 
     }
 }
